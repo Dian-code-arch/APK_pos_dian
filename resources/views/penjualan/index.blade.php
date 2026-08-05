@@ -15,7 +15,7 @@
 <h1 class="text-dark fw-bold">Halaman Penjualan</h1>
 
 <a href="{{ route('penjualan.create') }}" class="btn btn-primary mb-3">
-    Create
+    Tambah Perjualan
 </a>
 
 <form action="{{ route('penjualan.index') }}" method="GET" class="mb-3">
