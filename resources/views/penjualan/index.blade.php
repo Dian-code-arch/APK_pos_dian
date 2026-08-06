@@ -7,9 +7,9 @@
 @include('layouts.navbar')
 
 @if (session('errors'))
-    <div class="alert alert-danger">
-        {{ session('errors') }}
-    </div>
+<div class="alert alert-danger">
+    {{ session('errors') }}
+</div>
 @endif
 
 <h1 class="text-dark fw-bold">Halaman Penjualan</h1>
@@ -27,8 +27,7 @@
             name="search"
             value="{{ request()->search }}"
             class="form-control"
-            placeholder="Search penjualan"
-        >
+            placeholder="Search penjualan">
 
         <button class="btn btn-outline-secondary" type="submit">
             Search
@@ -85,70 +84,34 @@
             <td>
                 {{ $sale->status }}
             </td>
-
             <td class="d-flex gap-1">
 
-    <a href="{{ route('penjualan.show', $sale->id) }}"
-       class="btn btn-primary">
+                <a href="{{ route('penjualan.show', $sale->id) }}" class="btn btn-primary">
+                    Detail
+                </a>
 
-        Detail
+                <a href="{{ route('penjualan.edit', $sale->id) }}" class="btn btn-warning">
+                    Edit
+                </a>
 
-    </a>
+                <form action="{{ route('penjualan.destroy', $sale->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger" onclick="return confirm('Apakah anda yakin akan menghapus penjualan ini?')">
+                        Hapus
+                    </button>
+                </form>
 
-    {{-- Hanya Admin + status OPEN --}}
-    @if(
-    auth()->check()
-    &&
-    strtolower(auth()->user()->role->name) == 'admin'
-    &&
-    $sale->status == 'OPEN'
-)
-
-        <a href="{{ route('penjualan.edit', $sale->id) }}"
-           class="btn btn-warning">
-
-            Edit
-
-        </a>
-
-        <form
-            action="{{ route('penjualan.destroy', $sale->id) }}"
-            method="POST"
-            class="d-inline"
-        >
-
-            @csrf
-            @method('DELETE')
-
-            <button
-                class="btn btn-danger"
-                onclick="return confirm(
-                'Apakah anda yakin akan menghapus penjualan ini?'
-                )"
-            >
-
-                Hapus
-
-            </button>
-
-        </form>
-
-    @endif
-
-</td>
+            </td>
 
         </tr>
 
         @empty
 
         <tr>
-
             <td colspan="7">
-
                 Data Tidak Ditemukan
-
             </td>
-
         </tr>
 
         @endforelse
