@@ -12,10 +12,10 @@
 </div>
 @endif
 
-<h1 class="text-dark fw-bold">Halaman Penjualan</h1>
+<h1 class="text-dark fw-bold my-4">Halaman Penjualan</h1>
 
 <a href="{{ route('penjualan.create') }}" class="btn btn-primary mb-3">
-    Tambah Perjualan
+    Tambah Penjualan
 </a>
 
 <form action="{{ route('penjualan.index') }}" method="GET" class="mb-3">
@@ -37,22 +37,19 @@
 
 </form>
 
-<table class="table">
+<table class="table table-hover align-middle">
 
-    <thead>
-
-        <tr>
-
-            <th>#</th>
-            <th>Tanggal Transaksi</th>
-            <th>Kasir</th>
-            <th>Total Pembayaran</th>
-            <th>Metode Pembayaran</th>
-            <th>Status</th>
-            <th>Aksi</th>
-
+    <!-- Kepala Tabel dengan Gradasi Biru ke Hijau Pastel Kalem -->
+    <thead style="border-bottom: 2px solid #dee2e6;">
+        <tr style="background: linear-gradient(90deg, #cfe2ff 0%, #d1e7dd 100%) !important;">
+            <th scope="col" class="py-3 ps-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">#</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Tanggal Transaksi</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Kasir</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Total Pembayaran</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Metode Pembayaran</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Status</th>
+            <th scope="col" class="py-3" style="background: transparent !important; color: #1e293b !important; font-weight: 600;">Aksi</th>
         </tr>
-
     </thead>
 
     <tbody>
@@ -61,11 +58,11 @@
 
         <tr>
 
-            <th>
+            <th scope="row" class="ps-3">
                 {{ $sales->firstItem() + $loop->index }}
             </th>
 
-            <td>
+            <td class="text-secondary">
                 {{ $sale->created_at->translatedFormat('d-m-Y H:i:s') }}
             </td>
 
@@ -73,8 +70,8 @@
                 {{ $sale->user->name }}
             </td>
 
-            <td>
-                Rp. {{ number_format($sale->total_pembayaran) }}
+            <td class="fw-semibold">
+                Rp. {{ number_format($sale->total_pembayaran, 0, ',', '.') }}
             </td>
 
             <td>
@@ -84,24 +81,24 @@
             <td>
                 {{ $sale->status }}
             </td>
-            <td class="d-flex gap-1">
+            <td>
+                <div class="d-flex gap-1">
+                    <a href="{{ route('penjualan.show', $sale->id) }}" class="btn btn-primary btn-sm fw-medium">
+                        Detail
+                    </a>
 
-                <a href="{{ route('penjualan.show', $sale->id) }}" class="btn btn-primary">
-                    Detail
-                </a>
+                    <a href="{{ route('penjualan.edit', $sale->id) }}" class="btn btn-warning btn-sm fw-medium">
+                        Edit
+                    </a>
 
-                <a href="{{ route('penjualan.edit', $sale->id) }}" class="btn btn-warning">
-                    Edit
-                </a>
-
-                <form action="{{ route('penjualan.destroy', $sale->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger" onclick="return confirm('Apakah anda yakin akan menghapus penjualan ini?')">
-                        Hapus
-                    </button>
-                </form>
-
+                    <form action="{{ route('penjualan.destroy', $sale->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger btn-sm fw-medium" onclick="return confirm('Apakah anda yakin akan menghapus penjualan ini?')">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
             </td>
 
         </tr>
@@ -109,8 +106,8 @@
         @empty
 
         <tr>
-            <td colspan="7">
-                Data Tidak Ditemukan
+            <td colspan="7" class="text-center py-5 text-muted">
+                <h4>Data Tidak Ditemukan</h4>
             </td>
         </tr>
 
@@ -120,6 +117,8 @@
 
 </table>
 
-{{ $sales->links() }}
+<div class="mt-3">
+    {{ $sales->links() }}
+</div>
 
 @endsection
