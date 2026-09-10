@@ -22,16 +22,19 @@ class ProdukPolicy
 
     public function create(User $user): bool
     {
-        return $user->role->name === 'Admin';
+        // Kasir dan Admin bisa tambah produk
+        return in_array($user->role->name, ['Admin', 'Kasir'], true);
     }
 
     public function update(User $user, Produk $produk): bool
     {
-        return $user->role->name === 'Admin';
+        // Kasir dan Admin bisa edit produk
+        return in_array($user->role->name, ['Admin', 'Kasir'], true);
     }
 
     public function delete(User $user, Produk $produk): bool
     {
-        return $user->role->name === 'Admin';
+        // Kasir dan Admin bisa hapus produk
+        return in_array($user->role->name, ['Admin', 'Kasir'], true);
     }
 }

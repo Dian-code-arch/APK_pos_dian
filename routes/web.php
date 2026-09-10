@@ -31,9 +31,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('/produk', ProdukController::class);
         Route::resource('/penjualan', PenjualanController::class);
         Route::resource('/itempenjualan', ItemPenjualanController::class);
-        Route::get('/penjualan/{penjualan}/detail',
-        [PenjualanController::class,'show']
-            )->name('penjualan.show');
+        Route::get(
+            '/penjualan/{penjualan}/detail',
+            [PenjualanController::class, 'show']
+        )->name('penjualan.show');
         Route::resource('/itempenjualan', ItemPenjualanController::class);
     });
 });
