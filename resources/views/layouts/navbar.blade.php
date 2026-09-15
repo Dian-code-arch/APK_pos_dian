@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg" style="background-color: #cfe2ff !important;">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">POS</a>
+    <a class="navbar-brand" href="#">POS food</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -23,9 +23,11 @@
           <a class="nav-link {{ Request::is('tentang') ? 'active' : '' }}" href="/tentang">Tentang</a>
         </li>
       </ul>
-      <form class="position-absolute top-50 start-100 translate-middle" action="{{ route('logout') }}" method="POST">
+
+      <!-- Form Logout yang sudah diperbaiki posisinya ke sebelah kanan navbar -->
+      <form action="{{ route('logout') }}" method="POST" class="d-flex" onclick="return confirm('Apakah Anda yakin ingin logout?')">
         @csrf
-        <button type="submit" class="btn btn-danger me-2">Logout</button>
+        <button type="submit" class="btn btn-danger">Logout</button>
       </form>
     </div>
   </div>

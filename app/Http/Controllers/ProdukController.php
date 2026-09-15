@@ -17,13 +17,13 @@ class ProdukController extends Controller
 
         $keyword = $request->input('search');
 
-        if($keyword) {
-            $products = Produk::when($keyword, function($query) use ($keyword) {
+        if ($keyword) {
+            $products = Produk::when($keyword, function ($query) use ($keyword) {
                 $query->where('nama', 'like', '%' . $keyword . '%');
             })
-            ->orderBy('nama')
-            ->paginate(10)
-            ->withQueryString();
+                ->orderBy('nama')
+                ->paginate(10)
+                ->withQueryString();
         } else {
             $products = Produk::latest()->paginate(10)->withQueryString();
         }
@@ -72,7 +72,7 @@ class ProdukController extends Controller
 
         $dataReq = $request->validated();
 
-        
+
         $data = [
             'user_id' => Auth::id(),
             'nama' => $dataReq['name'],
@@ -82,14 +82,14 @@ class ProdukController extends Controller
         ];
 
         if ($request->hasFile('foto')) {
-            
-        if (
-            $produk->foto &&
-            Storage::disk('public')->exists($produk->foto)
-        ) {
-            Storage::disk('public')->delete($produk->foto);
-        }
-        $data['foto'] = $request->file('foto')->store('products', 'public');
+
+            if (
+                $produk->foto &&
+                Storage::disk('public')->exists($produk->foto)
+            ) {
+                Storage::disk('public')->delete($produk->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('products', 'public');
         }
         $produk->update($data);
 
@@ -108,9 +108,9 @@ class ProdukController extends Controller
     }
 
     public function show(Produk $produk)
-{
-    $this->authorize('view', $produk);
+    {
+        $this->authorize('view', $produk);
 
-    return view('produk.show', compact('produk'));
-}
+        return view('produk.show', compact('produk'));
+    }
 }

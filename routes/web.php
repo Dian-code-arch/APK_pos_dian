@@ -15,6 +15,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+    // Rute proses logout aman menggunakan POST
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::middleware('role:Admin')->prefix('admin')->name('admin.')->group(function () {
@@ -37,7 +39,7 @@ Route::middleware('auth')->group(function () {
         )->name('penjualan.show');
         Route::resource('/itempenjualan', ItemPenjualanController::class);
 
-        // Route untuk Halaman Tentang Baru yang Anda Minta
+        // Route untuk Halaman Tentang Baru
         Route::get('/tentang', function () {
             return view('tentang');
         })->name('tentang');

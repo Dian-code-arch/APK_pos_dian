@@ -4,8 +4,6 @@
 
 @section('content')
 
-@include('layouts.navbar')
-
 <h1 class="text-dark fw-bold my-4"> Halaman Users </h1>
 
 <a href="{{ route('admin.users.create') }}" method="GET" class="btn btn-primary mb-3">Tambah User</a>

@@ -4,8 +4,6 @@
 
 @section('content')
 
-@include('layouts.navbar')
-
 <div class="text-center">
     <h1>
         Ringkasan Hari Ini
@@ -191,7 +189,7 @@
                             @empty
                             <tr>
                                 <td colspan="3" class="text-muted text-center py-4">
-                                    Seluruh produk berada dalam kondisi stok aman.
+                                    Belum ada data penjualan produk.
                                 </td>
                             </tr>
                             @endforelse

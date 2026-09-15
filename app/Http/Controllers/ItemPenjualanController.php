@@ -12,124 +12,121 @@ use Illuminate\Support\Facades\DB;
 class ItemPenjualanController extends Controller
 {
     public function store(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:produk,id',
-        'quantity'   => 'required|integer|min:1'
-    ]);
-
-    DB::transaction(function () use ($request) {
-
-        $sale = Penjualan::where('user_id', Auth::id())
-            ->where('status', 'OPEN')
-            ->firstOrFail();
-
-        $product = Produk::lockForUpdate()->findOrFail($request->product_id);
-
-        // ! Cek stok
-        if ($product->stok < $request->quantity) {
-            return redirect()->route('penjualan.create')->with('errors', 'Produk stok tidak mencukupi');
-        }
-
-        // 🔽 Kurangi stok
-        $product->decrement('stok', $request->quantity);
-
-        // + Update / insert item penjualan
-        $item = ItemPenjualan::where('penjualan_id', $sale->id)
-            ->where('produk_id', $product->id)
-            ->lockForUpdate()
-            ->first();
-
-        if ($item) {
-        // UPDATE
-            $item->kuantitas += $request->quantity;
-                } else {
-        // CREATE
-            $item = new ItemPenjualan([
-                'penjualan_id' => $sale->id,
-                'produk_id' => $product->id,
-                'kuantitas' => $request->quantity,
-                'harga_satuan' => $product->harga_jual,
+    {
+        $request->validate([
+            'product_id' => 'required|exists:produk,id',
+            'quantity'   => 'required|integer|min:1'
         ]);
-    }
 
-        // hitung subtotal SETELAH kuantitas fix
+        DB::transaction(function () use ($request) {
+
+            $sale = Penjualan::where('user_id', Auth::id())
+                ->where('status', 'OPEN')
+                ->firstOrFail();
+
+            $product = Produk::lockForUpdate()->findOrFail($request->product_id);
+
+            // ! Cek stok
+            if ($product->stok < $request->quantity) {
+                return redirect()->route('penjualan.create')->with('errors', 'Produk stok tidak mencukupi');
+            }
+
+            // 🔽 Kurangi stok
+            $product->decrement('stok', $request->quantity);
+
+            // + Update / insert item penjualan
+            $item = ItemPenjualan::where('penjualan_id', $sale->id)
+                ->where('produk_id', $product->id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($item) {
+                // UPDATE
+                $item->kuantitas += $request->quantity;
+            } else {
+                // CREATE
+                $item = new ItemPenjualan([
+                    'penjualan_id' => $sale->id,
+                    'produk_id' => $product->id,
+                    'kuantitas' => $request->quantity,
+                    'harga_satuan' => $product->harga_jual,
+                ]);
+            }
+
+            // hitung subtotal SETELAH kuantitas fix
             $item->subtotal = $item->kuantitas * $item->harga_satuan;
             $item->save();
 
-        // 🟨 TOTAL PEMBAYARAN
+            // 🟨 TOTAL PEMBAYARAN
             $sale->total_pembayaran = $sale->itemPenjualan()->sum('subtotal');
             $sale->save();
-
         });
 
-            return back();
+        return back();
     }
 
     public function update(Request $request, ItemPenjualan $itempenjualan)
-{
-    $request->validate([
-        'quantity' => 'required|integer|min:1'
-    ]);
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
 
-    DB::transaction(function () use ($request, $itempenjualan) {
+        DB::transaction(function () use ($request, $itempenjualan) {
 
-        $produk = $itempenjualan->produk()->lockForUpdate()->first();
+            $produk = $itempenjualan->produk()->lockForUpdate()->first();
 
-        $selisih = $request->quantity - $itempenjualan->kuantitas;
+            $selisih = $request->quantity - $itempenjualan->kuantitas;
 
-        // ❗ Jika qty bertambah → kurangi stok
-        if ($selisih > 0) {
-            if ($produk->stok < $selisih) {
-                return redirect()->route('penjualan.create')->with('errors', 'Stok tidak mencukupi');
+            // ❗ Jika qty bertambah → kurangi stok
+            if ($selisih > 0) {
+                if ($produk->stok < $selisih) {
+                    return redirect()->route('penjualan.create')->with('errors', 'Stok tidak mencukupi');
+                }
+
+                $produk->decrement('stok', $selisih);
             }
 
-            $produk->decrement('stok', $selisih);
-        }
+            // ❗ Jika qty berkurang → kembalikan stok
+            if ($selisih < 0) {
+                $produk->increment('stok', abs($selisih));
+            }
 
-        // ❗ Jika qty berkurang → kembalikan stok
-        if ($selisih < 0) {
-            $produk->increment('stok', abs($selisih));
-        }
+            // 🔵 Update item
+            $itempenjualan->update([
+                'kuantitas' => $request->quantity,
+                'subtotal' => $request->quantity * $itempenjualan->harga_satuan
+            ]);
 
-        // 🔵 Update item
-        $itempenjualan->update([
-            'kuantitas' => $request->quantity,
-            'subtotal' => $request->quantity * $itempenjualan->harga_satuan
-        ]);
-
-        // 🟨 Update total penjualan
-        $itempenjualan->penjualan->update([
-            'total_pembayaran' =>
+            // 🟨 Update total penjualan
+            $itempenjualan->penjualan->update([
+                'total_pembayaran' =>
                 $itempenjualan->penjualan->itemPenjualan()->sum('subtotal')
-        ]);
-
-    });
+            ]);
+        });
 
         return back();
     }
 
     public function destroy(ItemPenjualan $itempenjualan)
-{
-    $this->authorize('delete', $itempenjualan);
-    
-    DB::transaction(function () use ($itempenjualan) {
+    {
+        $this->authorize('delete', $itempenjualan);
 
-        $produk = $itempenjualan->produk;
-        $sale = $itempenjualan->penjualan;
+        DB::transaction(function () use ($itempenjualan) {
 
-        // 🔼 Kembalikan stok
-        $produk->increment('stok', $itempenjualan->kuantitas);
+            $produk = $itempenjualan->produk;
+            $sale = $itempenjualan->penjualan;
 
-        // ❌ Hapus item
-        $itempenjualan->delete();
+            // 🔼 Kembalikan stok
+            $produk->increment('stok', $itempenjualan->kuantitas);
 
-        // 🔵 Update total penjualan
-        $sale->update([
-            'total_pembayaran' => $sale->itemPenjualan()->sum('subtotal')
-        ]);
+            // ❌ Hapus item
+            $itempenjualan->delete();
 
-    });
+            // 🔵 Update total penjualan
+            $sale->update([
+                'total_pembayaran' => $sale->itemPenjualan()->sum('subtotal')
+            ]);
+        });
 
         return back();
     }

@@ -8,6 +8,11 @@
 </head>
 
 <body>
+    <!-- Hanya tampilkan navbar jika halaman saat ini BUKAN halaman login -->
+    @if(request()->routeIs('login') == false)
+    @include('layouts.navbar')
+    @endif
+
     <div class="container">
 
         @if(session("success"))

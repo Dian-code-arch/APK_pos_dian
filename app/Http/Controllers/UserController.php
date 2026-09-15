@@ -46,26 +46,26 @@ class UserController extends Controller
         return redirect()->route('admin.users')->with('success', 'User berhasil dibuat');
     }
 
-        public function edit(User $user)
-        {
-            $roles = Role::all();
-    
-            return view('users.edit', compact('user', 'roles'));
-        }
+    public function edit(User $user)
+    {
+        $roles = Role::all();
 
-        public function update(UpdateRequest $request, User $user)
-{
-    $dataReq = $request->validated();
-
-    $user->name    = $dataReq['name'];
-    $user->email   = $dataReq['email'];
-    $user->role_id = $dataReq['role_id'];
-
-    if (!empty($dataReq['password'])) {
-        $user->password = Hash::make($dataReq['password']);
+        return view('users.edit', compact('user', 'roles'));
     }
 
-    $user->save();
+    public function update(UpdateRequest $request, User $user)
+    {
+        $dataReq = $request->validated();
+
+        $user->name    = $dataReq['name'];
+        $user->email   = $dataReq['email'];
+        $user->role_id = $dataReq['role_id'];
+
+        if (!empty($dataReq['password'])) {
+            $user->password = Hash::make($dataReq['password']);
+        }
+
+        $user->save();
 
         return redirect()->route('admin.users.edit', $user->id)->with('success', 'User updated');
     }
