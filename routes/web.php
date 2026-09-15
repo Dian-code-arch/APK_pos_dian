@@ -36,5 +36,10 @@ Route::middleware('auth')->group(function () {
             [PenjualanController::class, 'show']
         )->name('penjualan.show');
         Route::resource('/itempenjualan', ItemPenjualanController::class);
+
+        // Route untuk Halaman Tentang Baru yang Anda Minta
+        Route::get('/tentang', function () {
+            return view('tentang');
+        })->name('tentang');
     });
 });

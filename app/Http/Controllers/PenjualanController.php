@@ -12,29 +12,29 @@ use Illuminate\Support\Facades\DB;
 class PenjualanController extends Controller
 {
     public function index(SearchRequest $request)
-{
-    $user = Auth::user();
-    $keyword = $request->input('search');
+    {
+        $user = Auth::user();
+        $keyword = $request->input('search');
 
-    $sales = Penjualan::query()
+        $sales = Penjualan::query()
 
-    // 🔐 Filter berdasarkan role
-    ->when($user->role->name == 'kasir', function ($query) use ($user) {
-        $query->where('user_id', $user->id);
-    })
+            // 🔐 Filter berdasarkan role
+            ->when($user->role->name == 'kasir', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
 
-    // 🔎 Search nama user
-    ->when($keyword, function ($query) use ($keyword) {
-        $query->whereHas('user', function ($q) use ($keyword) {
-            $q->where('name', 'like', '%' . $keyword . '%');
-        });
-    })
+            // 🔎 Search nama user
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->whereHas('user', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%' . $keyword . '%');
+                });
+            })
 
-    ->latest()
-    ->paginate(10)
-    ->withQueryString();
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-    return view('penjualan.index', compact('sales'));
+        return view('penjualan.index', compact('sales'));
     }
 
     public function create(SearchRequest $request)
@@ -52,12 +52,12 @@ class PenjualanController extends Controller
 
         $keyword = $request->input('search');
 
-        if($keyword) {
+        if ($keyword) {
             $products = Produk::when($keyword, function ($query) use ($keyword) {
                 $query->where('nama', 'like', '%' . $keyword . '%');
-        })
-            ->orderBy('nama')
-            ->get();
+            })
+                ->orderBy('nama')
+                ->get();
         } else {
             $products = Produk::orderBy('nama')->get();
         }
@@ -92,51 +92,47 @@ class PenjualanController extends Controller
             ->with('success', 'Transaksi berhasil dibatalkan');
     }
 
-        public function update(Request $request, Penjualan $penjualan)
-{
-    $request->validate([
-        'payment_method' => 'required|in:CASH,QRIS'
-    ]);
-
-    if ($penjualan->status !== 'OPEN') {
-        return back()->with('errors', 'Transaksi sudah diproses');
-    }
-
-    if ($penjualan->itemPenjualan()->count() === 0) {
-        return back()->with('errors', 'Keranjang masih kosong');
-    }
-
-    DB::transaction(function () use ($penjualan, $request) {
-
-        $total = $penjualan->itemPenjualan()->sum('subtotal');
-
-        $penjualan->update([
-            'metode_pembayaran' => $request->payment_method,
-            'total_pembayaran'  => $total,
-            'status'            => 'COMPLETED'
+    public function update(Request $request, Penjualan $penjualan)
+    {
+        // Validasi diubah menjadi nullable agar tidak memicu error required
+        $request->validate([
+            'payment_method' => 'nullable|in:CASH,QRIS'
         ]);
-    });
 
-     return redirect()
-        ->route('penjualan.index')
-        ->with('success', 'Transaksi berhasil diselesaikan');
+        if ($penjualan->itemPenjualan()->count() === 0) {
+            return back()->with('errors', 'Keranjang masih kosong');
+        }
+
+        DB::transaction(function () use ($penjualan, $request) {
+
+            $total = $penjualan->itemPenjualan()->sum('subtotal');
+
+            // Jika payment_method kosong/tidak dipilih, otomatis diisi 'CASH'
+            $method = $request->input('payment_method') ?: 'CASH';
+
+            $penjualan->update([
+                'metode_pembayaran' => $method,
+                'total_pembayaran'  => $total,
+                'status'            => 'COMPLETED'
+            ]);
+        });
+
+        return redirect()
+            ->route('penjualan.index')
+            ->with('success', 'Transaksi berhasil diselesaikan');
     }
 
     public function edit(Penjualan $penjualan)
-{
-    $sale = $penjualan;
+    {
+        $sale = $penjualan;
 
-    if ($sale->status === 'COMPLETED') {
-        return redirect()
-            ->route('penjualan.index')
-            ->with('errors', 'Transaksi sudah selesai dan tidak dapat diedit');
-    }
+        // Pengecekan status COMPLETED di sini sudah dihapus agar bisa langsung diedit
 
-    $sale->load('itemPenjualan');
+        $sale->load('itemPenjualan');
 
-    $products = Produk::orderBy('nama')->get();
+        $products = Produk::orderBy('nama')->get();
 
-    $mode = 'edit';
+        $mode = 'edit';
 
         return view('penjualan.pos', compact(
             'sale',

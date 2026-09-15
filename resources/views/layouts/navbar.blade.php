@@ -18,6 +18,10 @@
         <li class="nav-item">
           <a class="nav-link {{ Request::is('penjualan') ? 'active' : '' }}" href="{{ route('penjualan.index') }}">Penjualan</a>
         </li>
+        <!-- Menu Tentang yang Baru -->
+        <li class="nav-item">
+          <a class="nav-link {{ Request::is('tentang') ? 'active' : '' }}" href="/tentang">Tentang</a>
+        </li>
       </ul>
       <form class="position-absolute top-50 start-100 translate-middle" action="{{ route('logout') }}" method="POST">
         @csrf

@@ -10,8 +10,8 @@
 <div class="vw-100 vh-100 position-fixed top-0 start-0" style="z-index: -1; background: linear-gradient(135deg, #cfe2ff 0%, #e2d9f3 100%);"></div>
 
 <div class="card text-center position-absolute top-50 start-50 translate-middle shadow border-0" style="width: 22rem; border-radius: 12px; overflow: hidden;">
-    <!-- Header menggunakan warna biru muda soft dengan teks biru tua -->
-    <h5 class="card-header text-dark fw-bold py-3 border-0" style="background: linear-gradient(90deg, #cfe2ff 0%, #e2d9f3 100%);">Login POS</h5>
+    <!-- Header menggunakan warna biru muda soft dengan teks biru tua dan judul POS FOOD -->
+    <h5 class="card-header text-dark fw-bold py-3 border-0" style="background: linear-gradient(90deg, #cfe2ff 0%, #e2d9f3 100%);">POS FOOD</h5>
 
     <!-- MENGUBAH BACKGROUND BADAN KOTAK MENJADI BIRU MUDA (bg-light atau bg-info-subtle) -->
     <div class="card-body p-4 bg-white bg-opacity-90">
