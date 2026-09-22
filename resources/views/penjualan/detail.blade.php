@@ -114,12 +114,12 @@
 
             </table>
 
-             <a href="{{ route('penjualan.index') }}"
-           class="btn btn-secondary">
+            <a href="{{ route('penjualan.index') }}"
+                class="btn btn-secondary">
 
-            Kembali
+                Kembali
 
-        </a>
+            </a>
 
         </div>
 

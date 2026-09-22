@@ -13,7 +13,8 @@
     @include('layouts.navbar')
     @endif
 
-    <div class="container">
+    <!-- Menambahkan mt-4 (margin-top) langsung di sini agar hanya konten yang turun ke bawah, sementara navbar tetap di atas -->
+    <div class="container mt-4">
 
         @if(session("success"))
         <div class="alert alert-success">

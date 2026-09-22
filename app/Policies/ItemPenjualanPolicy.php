@@ -9,6 +9,6 @@ class ItemPenjualanPolicy
 {
     public function delete(User $user, ItemPenjualan $penjualan): bool
     {
-    return strtolower($user->role->name) === 'admin';
+        return strtolower($user->role->name) === 'admin';
     }
 }
