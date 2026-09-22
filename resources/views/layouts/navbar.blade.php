@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg" style="background-color: #78c983 !important;">
+<nav class="navbar navbar-expand-lg" style="background-color: #8fc997 !important;">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">POS food</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,7 @@
       <!-- Form Logout yang sudah diperbaiki posisinya ke sebelah kanan navbar -->
       <form action="{{ route('logout') }}" method="POST" class="d-flex" onclick="return confirm('Apakah Anda yakin ingin logout?')">
         @csrf
-        <button type="submit" class="btn btn-light text-danger">Logout</button>
+        <button type="submit" class="btn btn-light text-dark">Logout</button>
       </form>
     </div>
   </div>
